@@ -75,9 +75,17 @@ namespace EdmiBackend.Controllers
                 _context.Update(device);
                 var validateExistence = await _context.EdmiDevice.AnyAsync(x => x.SerialNumber == device.SerialNumber);
 
+
+
                 if (validateExistence)
                 {
-                    return BadRequest(new { message = "Serial Number " + device.SerialNumber + " already exists" });
+                    var findDevice = _context.EdmiDevice.Where(x => x.SerialNumber == device.SerialNumber).FirstOrDefault();                    
+
+                    if (findDevice.Id != id)
+                    {
+                        return BadRequest(new { message = "Serial Number " + device.SerialNumber + " already exists" });
+                    }
+                    
                 }
                 await _context.SaveChangesAsync();
                 return Ok(new { message = "The device was successfully upgraded" });
